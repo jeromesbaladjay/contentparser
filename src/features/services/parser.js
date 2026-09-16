@@ -338,7 +338,14 @@ export function buildPageCopyText(page) {
     if (section.type === 'C') {
       if (section.header) chunks.push(section.header);
       if (section.openingSentence) chunks.push(section.openingSentence);
-      (section.bullets || []).filter(Boolean).forEach((bullet) => chunks.push(bullet));
+      (section.bullets || [])
+        .filter(Boolean)
+        .forEach((bullet) => {
+          const { question, answer } = splitQuestionAnswer(bullet);
+          // Line break after the question mark, not a blank-line paragraph break,
+          // so the Q and its A stay together as one copied unit.
+          chunks.push(answer ? `${question}\n${answer}` : question);
+        });
       if (section.closingSentence) chunks.push(section.closingSentence);
     }
   });
