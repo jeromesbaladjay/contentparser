@@ -11,8 +11,8 @@ export default function App() {
       <header className="border-b border-line">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
           <div className="flex items-baseline gap-3">
-            <span className="text-[15px] font-semibold tracking-tight text-ink">TSI Tools</span>
-            <span className="text-sm text-muted">Service Content Parser</span>
+            <span className="text-[15px] font-semibold tracking-tight text-ink">SERVICE CONTENT</span>
+            <span className="text-sm text-muted">Parser</span>
           </div>
 
           <button
@@ -33,7 +33,7 @@ export default function App() {
 
       <footer className="mx-auto max-w-6xl px-6 pb-10">
         <p className="border-t border-line pt-6 text-xs text-faint">
-          Content stays in your browser. Nothing is uploaded.
+          Service Content Parser
         </p>
       </footer>
     </div>
