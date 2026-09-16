@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Service Content Parser</title>
+    <script>
+      // Apply the saved theme before first paint. Dark is the default.
+      try {
+        var saved = localStorage.getItem('scp-theme');
+        document.documentElement.setAttribute(
+          'data-theme',
+          saved === 'light' ? 'light' : 'dark'
+        );
+      } catch (e) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

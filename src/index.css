@@ -1,0 +1,134 @@
+@import "tailwindcss";
+
+/* Tailwind colour tokens point at the theme variables below, so every
+   utility (text-ink, bg-paper, border-line ...) follows the active theme. */
+@theme {
+    --color-ink: var(--c-ink);
+    --color-ink-soft: var(--c-ink-soft);
+    --color-muted: var(--c-muted);
+    --color-faint: var(--c-faint);
+    --color-line: var(--c-line);
+    --color-line-strong: var(--c-line-strong);
+    --color-wash: var(--c-wash);
+    --color-paper: var(--c-paper);
+    --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* Dark is the default theme. */
+:root,
+:root[data-theme="dark"] {
+    --c-ink: #f4f4f4;
+    --c-ink-soft: #c9c9c9;
+    --c-muted: #9a9a9a;
+    --c-faint: #6e6e6e;
+    --c-line: #2a2a2a;
+    --c-line-strong: #3d3d3d;
+    --c-wash: #1a1a1a;
+    --c-paper: #0d0d0d;
+    color-scheme: dark;
+}
+
+:root[data-theme="light"] {
+    --c-ink: #0a0a0a;
+    --c-ink-soft: #3d3d3d;
+    --c-muted: #6f6f6f;
+    --c-faint: #9b9b9b;
+    --c-line: #e4e4e4;
+    --c-line-strong: #cfcfcf;
+    --c-wash: #f6f6f6;
+    --c-paper: #ffffff;
+    color-scheme: light;
+}
+
+:root {
+    background-color: var(--c-paper);
+    color: var(--c-ink);
+}
+
+@layer base {
+    body {
+        @apply antialiased bg-paper text-ink font-sans;
+        min-height: 100vh;
+        transition: background-color 0.15s ease, color 0.15s ease;
+    }
+
+    ::selection {
+        background: var(--c-ink);
+        color: var(--c-paper);
+    }
+
+    :focus-visible {
+        outline: 2px solid var(--c-ink);
+        outline-offset: 2px;
+    }
+
+    textarea,
+    input {
+        font-family: var(--font-sans);
+    }
+}
+
+@layer components {
+    .field {
+        @apply w-full rounded-lg border border-line bg-paper text-ink placeholder:text-faint
+        transition-colors outline-none resize-y;
+    }
+
+    .field:hover {
+        border-color: var(--c-line-strong);
+    }
+
+    .field:focus {
+        border-color: var(--c-ink);
+    }
+
+    .btn-primary {
+        @apply inline-flex items-center justify-center gap-2 rounded-lg bg-ink px-5 py-2.5
+        text-sm font-medium text-paper transition-colors;
+    }
+
+    .btn-primary:hover {
+        background-color: var(--c-ink-soft);
+    }
+
+    .btn-primary:disabled {
+        background-color: var(--c-line-strong);
+        cursor: not-allowed;
+    }
+
+    .btn-quiet {
+        @apply inline-flex items-center justify-center gap-2 rounded-lg border border-line
+        bg-paper px-3.5 py-2 text-sm font-medium text-ink-soft transition-colors;
+    }
+
+    .btn-quiet:hover {
+        border-color: var(--c-ink);
+        color: var(--c-ink);
+    }
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--c-line-strong);
+    border-radius: 9999px;
+    border: 3px solid var(--c-paper);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--c-faint);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
+}
