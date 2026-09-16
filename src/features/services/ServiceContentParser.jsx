@@ -77,6 +77,7 @@ function SectionBlock({ page, section, sectionIndex, copiedId, copiedIds, onCopy
 
   if (section.type === 'A' || section.type === 'B') {
     const heading = section.type === 'A' ? section.subHeader : section.header;
+
     return (
       <div className="space-y-1">
         <CopyBlock
@@ -88,6 +89,7 @@ function SectionBlock({ page, section, sectionIndex, copiedId, copiedIds, onCopy
           copiedIds={copiedIds}
           onCopy={onCopy}
         />
+
         <CopyBlock
           id={key('body')}
           text={paragraphs.join('\n\n')}
@@ -111,6 +113,7 @@ function SectionBlock({ page, section, sectionIndex, copiedId, copiedIds, onCopy
         copiedIds={copiedIds}
         onCopy={onCopy}
       />
+
       <CopyBlock
         id={key('opening')}
         text={section.openingSentence}
@@ -119,9 +122,11 @@ function SectionBlock({ page, section, sectionIndex, copiedId, copiedIds, onCopy
         copiedIds={copiedIds}
         onCopy={onCopy}
       />
+
       <ul className="space-y-1 border-l border-line pl-3">
         {(section.bullets || []).map((bullet, index) => {
           const { question, answer } = splitQuestionAnswer(bullet);
+
           return (
             <li key={index}>
               <CopyBlock
@@ -132,6 +137,7 @@ function SectionBlock({ page, section, sectionIndex, copiedId, copiedIds, onCopy
                 copiedIds={copiedIds}
                 onCopy={onCopy}
               />
+
               <CopyBlock
                 id={key(`a-${index}`)}
                 text={answer}
@@ -144,6 +150,7 @@ function SectionBlock({ page, section, sectionIndex, copiedId, copiedIds, onCopy
           );
         })}
       </ul>
+
       <CopyBlock
         id={key('closing')}
         text={section.closingSentence}
@@ -158,12 +165,18 @@ function SectionBlock({ page, section, sectionIndex, copiedId, copiedIds, onCopy
 
 function PageCard({ page, isOpen, onToggle, copiedId, copiedIds, onCopy }) {
   const pageCopyId = `${page.id}-all`;
-  const preview = page.subheadline || page.headline || page.sections[0]?.paragraphs?.[0] || '';
+  const preview =
+    page.subheadline ||
+    page.headline ||
+    page.sections[0]?.paragraphs?.[0] ||
+    '';
 
   return (
     <article className="rounded-xl border border-line bg-paper">
       <div className="flex items-start gap-4 p-5">
-        <span className="mt-0.5 w-6 shrink-0 text-sm tabular-nums text-faint">{page.index}</span>
+        <span className="mt-0.5 w-6 shrink-0 text-sm tabular-nums text-faint">
+          {page.index}
+        </span>
 
         <div
           role="button"
@@ -178,10 +191,16 @@ function PageCard({ page, isOpen, onToggle, copiedId, copiedIds, onCopy }) {
           aria-expanded={isOpen}
           className="min-w-0 flex-1 cursor-pointer text-left"
         >
-          <h3 className="truncate text-[17px] font-semibold tracking-tight text-ink" title={page.name}>
+          <h3
+            className="truncate text-[17px] font-semibold tracking-tight text-ink"
+            title={page.name}
+          >
             {page.name}
           </h3>
-          <p className="mt-1 line-clamp-2 text-sm leading-6 text-muted">{preview}</p>
+
+          <p className="mt-1 line-clamp-2 text-sm leading-6 text-muted">
+            {preview}
+          </p>
         </div>
 
         <div className="flex shrink-0 items-center gap-2">
@@ -196,10 +215,12 @@ function PageCard({ page, isOpen, onToggle, copiedId, copiedIds, onCopy }) {
             ) : (
               <Copy className="h-4 w-4" />
             )}
+
             <span className="hidden sm:inline">
               {copiedId === pageCopyId ? 'Copied' : 'Copy page'}
             </span>
           </button>
+
           <button
             type="button"
             onClick={onToggle}
@@ -207,7 +228,11 @@ function PageCard({ page, isOpen, onToggle, copiedId, copiedIds, onCopy }) {
             aria-label={isOpen ? `Collapse ${page.name}` : `Expand ${page.name}`}
             className="btn-quiet px-2"
           >
-            <ChevronDown className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+            <ChevronDown
+              className={`h-4 w-4 transition-transform ${
+                isOpen ? 'rotate-180' : ''
+              }`}
+            />
           </button>
         </div>
       </div>
@@ -223,6 +248,7 @@ function PageCard({ page, isOpen, onToggle, copiedId, copiedIds, onCopy }) {
             copiedIds={copiedIds}
             onCopy={onCopy}
           />
+
           {page.sections.map((section, sectionIndex) => (
             <SectionBlock
               key={`${page.id}-${section.type}-${sectionIndex}`}
@@ -250,11 +276,16 @@ export function ServiceContentParser() {
   const [copiedIds, setCopiedIds] = useState(() => new Set());
   const copyTimer = useRef(null);
 
-  const pageNames = useMemo(() => parseSitemap(pageListText), [pageListText]);
+  const pageNames = useMemo(
+    () => parseSitemap(pageListText),
+    [pageListText]
+  );
 
   useEffect(
     () => () => {
-      if (copyTimer.current) window.clearTimeout(copyTimer.current);
+      if (copyTimer.current) {
+        window.clearTimeout(copyTimer.current);
+      }
     },
     []
   );
@@ -278,23 +309,41 @@ export function ServiceContentParser() {
         document.body.removeChild(helper);
       }
     } catch {
-      setError('Copying is blocked by the browser. Select the text manually instead.');
+      setError(
+        'Copying is blocked by the browser. Select the text manually instead.'
+      );
       return;
     }
 
     setCopiedId(id);
     setCopiedIds((prev) => new Set(prev).add(id));
-    if (copyTimer.current) window.clearTimeout(copyTimer.current);
-    copyTimer.current = window.setTimeout(() => setCopiedId(null), 1800);
+
+    if (copyTimer.current) {
+      window.clearTimeout(copyTimer.current);
+    }
+
+    copyTimer.current = window.setTimeout(() => {
+      setCopiedId(null);
+    }, 1800);
   }, []);
 
   const handleGenerate = () => {
+    // Service content is required.
     if (!contentText.trim()) {
-      setError('Paste the service content before generating pages.');
+      setError('Please enter the service content before generating pages.');
+      return;
+    }
+
+    // Page auto adjustment/page list is also required.
+    if (!pageListText.trim() || pageNames.length === 0) {
+      setError(
+        'Please enter the Page auto adjustment list before generating pages.'
+      );
       return;
     }
 
     let parsed;
+
     try {
       parsed = parseServicesContent(contentText, pageNames);
     } catch (err) {
@@ -303,7 +352,9 @@ export function ServiceContentParser() {
     }
 
     if (parsed.pages.length === 0) {
-      setError('No page structure was found in that content. Check that full pages were pasted.');
+      setError(
+        'No page structure was found in that content. Check that full pages were pasted.'
+      );
       setResult(null);
       return;
     }
@@ -326,21 +377,34 @@ export function ServiceContentParser() {
   const togglePage = (pageId) => {
     setOpenPages((prev) => {
       const next = new Set(prev);
-      if (next.has(pageId)) next.delete(pageId);
-      else next.add(pageId);
+
+      if (next.has(pageId)) {
+        next.delete(pageId);
+      } else {
+        next.add(pageId);
+      }
+
       return next;
     });
   };
 
-  const allOpen = Boolean(result) && openPages.size === result.pages.length;
+  const allOpen =
+    Boolean(result) && openPages.size === result.pages.length;
 
   const toggleAll = () => {
     if (!result) return;
-    setOpenPages(allOpen ? new Set() : new Set(result.pages.map((page) => page.id)));
+
+    setOpenPages(
+      allOpen
+        ? new Set()
+        : new Set(result.pages.map((page) => page.id))
+    );
   };
 
   const countMismatch =
-    result && pageNames.length > 0 && pageNames.length !== result.pages.length;
+    result &&
+    pageNames.length > 0 &&
+    pageNames.length !== result.pages.length;
 
   return (
     <div className="space-y-8">
@@ -350,27 +414,39 @@ export function ServiceContentParser() {
             <h2 className="text-2xl font-semibold tracking-tight text-ink">
               Turn pasted content into ordered pages
             </h2>
+
             <p className="mt-2 max-w-2xl text-[15px] leading-7 text-muted">
-              Paste the service content on the left and your page list on the right. Pages are
-              generated in the exact order of the list, and any page title line found in the
-              content is removed.
+              Enter both the service content and the Page auto adjustment
+              list before generating. Pages are generated in the exact order
+              of your page list, and any page title line found in the content
+              is removed.
             </p>
           </div>
 
           <div className="grid gap-5 lg:grid-cols-[1.6fr_1fr]">
             <div>
               <div className="mb-2 flex items-baseline justify-between gap-3">
-                <label htmlFor="service-content" className="text-sm font-medium text-ink">
-                  Service content
+                <label
+                  htmlFor="service-content"
+                  className="text-sm font-medium text-ink"
+                >
+                  Service content <span className="text-red-600">*</span>
                 </label>
+
                 <span className="text-xs text-faint">
-                  {contentText.trim() ? `${contentText.trim().length.toLocaleString()} characters` : 'Required'}
+                  {contentText.trim()
+                    ? `${contentText.trim().length.toLocaleString()} characters`
+                    : 'Required'}
                 </span>
               </div>
+
               <textarea
                 id="service-content"
                 value={contentText}
-                onChange={(event) => setContentText(event.target.value)}
+                onChange={(event) => {
+                  setContentText(event.target.value);
+                  if (error) setError('');
+                }}
                 placeholder={CONTENT_PLACEHOLDER}
                 spellCheck={false}
                 className="field min-h-[380px] p-4 text-[15px] leading-7"
@@ -379,33 +455,52 @@ export function ServiceContentParser() {
 
             <div>
               <div className="mb-2 flex items-baseline justify-between gap-3">
-                <label htmlFor="page-list" className="text-sm font-medium text-ink">
-                  Page auto adjustment
+                <label
+                  htmlFor="page-list"
+                  className="text-sm font-medium text-ink"
+                >
+                  Page auto adjustment{' '}
+                  <span className="text-red-600">*</span>
                 </label>
+
                 <span className="text-xs text-faint">
                   {pageNames.length > 0
-                    ? `${pageNames.length} ${pageNames.length === 1 ? 'page' : 'pages'}`
-                    : 'Optional'}
+                    ? `${pageNames.length} ${
+                        pageNames.length === 1 ? 'page' : 'pages'
+                      }`
+                    : 'Required'}
                 </span>
               </div>
+
               <textarea
                 id="page-list"
                 value={pageListText}
-                onChange={(event) => setPageListText(event.target.value)}
+                onChange={(event) => {
+                  setPageListText(event.target.value);
+                  if (error) setError('');
+                }}
                 placeholder={PAGE_LIST_PLACEHOLDER}
                 spellCheck={false}
                 className="field min-h-[380px] p-4 font-mono text-[13px] leading-6"
               />
+
               <p className="mt-2 text-xs leading-5 text-faint">
-                With or without “&gt;”. The order you paste is the order you get.
+                Required. Enter the page names you want to generate. You can
+                use “&gt;” or paste plain lines. The order you enter is the
+                order used for the generated pages.
               </p>
             </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
-            <button type="button" onClick={handleGenerate} className="btn-primary">
+            <button
+              type="button"
+              onClick={handleGenerate}
+              className="btn-primary"
+            >
               Generate pages
             </button>
+
             {(contentText || pageListText) && (
               <button
                 type="button"
@@ -426,31 +521,54 @@ export function ServiceContentParser() {
           <div className="flex flex-wrap items-end justify-between gap-4 border-b border-line pb-5">
             <div>
               <h2 className="text-2xl font-semibold tracking-tight text-ink">
-                {result.pages.length} {result.pages.length === 1 ? 'page' : 'pages'} generated
+                {result.pages.length}{' '}
+                {result.pages.length === 1 ? 'page' : 'pages'} generated
               </h2>
+
               <p className="mt-1 text-sm text-muted">
-                Listed in the order you pasted them. Click any line to copy it.
+                Listed in the order you pasted them. Click any line to copy
+                it.
+
                 {result.removedTitles.length > 0 &&
                   ` ${result.removedTitles.length} title ${
                     result.removedTitles.length === 1 ? 'line was' : 'lines were'
                   } removed from the content.`}
               </p>
             </div>
+
             <div className="flex flex-wrap items-center gap-2">
-              <button type="button" onClick={toggleAll} className="btn-quiet">
+              <button
+                type="button"
+                onClick={toggleAll}
+                className="btn-quiet"
+              >
                 {allOpen ? 'Collapse all' : 'Expand all'}
               </button>
+
               <button
                 type="button"
                 onClick={() =>
-                  handleCopy(result.pages.map(buildPageCopyText).join('\n\n\n'), 'all-pages')
+                  handleCopy(
+                    result.pages.map(buildPageCopyText).join('\n\n\n'),
+                    'all-pages'
+                  )
                 }
                 className="btn-quiet"
               >
-                {copiedId === 'all-pages' ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                {copiedId === 'all-pages' ? (
+                  <Check className="h-4 w-4" />
+                ) : (
+                  <Copy className="h-4 w-4" />
+                )}
+
                 {copiedId === 'all-pages' ? 'Copied' : 'Copy all'}
               </button>
-              <button type="button" onClick={handleReset} className="btn-primary">
+
+              <button
+                type="button"
+                onClick={handleReset}
+                className="btn-primary"
+              >
                 Edit input
               </button>
             </div>
@@ -459,9 +577,9 @@ export function ServiceContentParser() {
           {countMismatch && (
             <p className="rounded-lg border border-line bg-wash px-4 py-3 text-sm leading-6 text-ink-soft">
               Your page list has {pageNames.length}{' '}
-              {pageNames.length === 1 ? 'entry' : 'entries'} but the content produced{' '}
-              {result.pages.length}. Names are applied in order, so any extra pages keep their own
-              heading as the name.
+              {pageNames.length === 1 ? 'entry' : 'entries'} but the content
+              produced {result.pages.length}. Names are applied in order, so
+              any extra pages keep their own heading as the name.
             </p>
           )}
 
