@@ -1,20 +1,10 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Check, ChevronDown, Copy } from 'lucide-react';
 import { parseServicesContent, buildPageCopyText, splitQuestionAnswer } from './parser.js';
-import { parseSitemap } from './sitemap.js';
 
 const CONTENT_PLACEHOLDER = `Paste the service content here.
 
 Page title lines are removed automatically, so titles never end up inside the content.`;
-
-const PAGE_LIST_PLACEHOLDER = `>Residential Pest Control
->Commercial Pest Control
->Lawn and Ornamental Services
-
-or without the ">" prefix:
-
-Residential Pest Control
-Commercial Pest Control`;
 
 /** Strip bullet/number decoration before putting text on the clipboard. */
 function toPlainCopyText(text) {
@@ -268,18 +258,12 @@ function PageCard({ page, isOpen, onToggle, copiedId, copiedIds, onCopy }) {
 
 export function ServiceContentParser() {
   const [contentText, setContentText] = useState('');
-  const [pageListText, setPageListText] = useState('');
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
   const [openPages, setOpenPages] = useState(() => new Set());
   const [copiedId, setCopiedId] = useState(null);
   const [copiedIds, setCopiedIds] = useState(() => new Set());
   const copyTimer = useRef(null);
-
-  const pageNames = useMemo(
-    () => parseSitemap(pageListText),
-    [pageListText]
-  );
 
   useEffect(
     () => () => {
@@ -334,18 +318,10 @@ export function ServiceContentParser() {
       return;
     }
 
-    // Page auto adjustment/page list is also required.
-    if (!pageListText.trim() || pageNames.length === 0) {
-      setError(
-        'Please enter the Page auto adjustment list before generating pages.'
-      );
-      return;
-    }
-
     let parsed;
 
     try {
-      parsed = parseServicesContent(contentText, pageNames);
+      parsed = parseServicesContent(contentText);
     } catch (err) {
       setError(`The content could not be read: ${err.message}`);
       return;
@@ -401,11 +377,6 @@ export function ServiceContentParser() {
     );
   };
 
-  const countMismatch =
-    result &&
-    pageNames.length > 0 &&
-    pageNames.length !== result.pages.length;
-
   return (
     <div className="space-y-8">
       {!result ? (
@@ -416,80 +387,39 @@ export function ServiceContentParser() {
             </h2>
 
             <p className="mt-2 max-w-2xl text-[15px] leading-7 text-muted">
-              Enter both the service content and the Page auto adjustment
-              list before generating. Pages are generated in the exact order
-              of your page list, and any page title line found in the content
-              is removed.
+              Paste the service content before generating. Pages are generated
+              in the order they appear in the content, and any page title line
+              found in the content is removed.
             </p>
           </div>
 
-          <div className="grid gap-5 lg:grid-cols-[1.6fr_1fr]">
-            <div>
-              <div className="mb-2 flex items-baseline justify-between gap-3">
-                <label
-                  htmlFor="service-content"
-                  className="text-sm font-medium text-ink"
-                >
-                  Service content <span className="text-red-600">*</span>
-                </label>
+          <div>
+            <div className="mb-2 flex items-baseline justify-between gap-3">
+              <label
+                htmlFor="service-content"
+                className="text-sm font-medium text-ink"
+              >
+                Service content <span className="text-red-600">*</span>
+              </label>
 
-                <span className="text-xs text-faint">
-                  {contentText.trim()
-                    ? `${contentText.trim().length.toLocaleString()} characters`
-                    : 'Required'}
-                </span>
-              </div>
-
-              <textarea
-                id="service-content"
-                value={contentText}
-                onChange={(event) => {
-                  setContentText(event.target.value);
-                  if (error) setError('');
-                }}
-                placeholder={CONTENT_PLACEHOLDER}
-                spellCheck={false}
-                className="field min-h-[380px] p-4 text-[15px] leading-7"
-              />
+              <span className="text-xs text-faint">
+                {contentText.trim()
+                  ? `${contentText.trim().length.toLocaleString()} characters`
+                  : 'Required'}
+              </span>
             </div>
 
-            <div>
-              <div className="mb-2 flex items-baseline justify-between gap-3">
-                <label
-                  htmlFor="page-list"
-                  className="text-sm font-medium text-ink"
-                >
-                  Page auto adjustment{' '}
-                  <span className="text-red-600">*</span>
-                </label>
-
-                <span className="text-xs text-faint">
-                  {pageNames.length > 0
-                    ? `${pageNames.length} ${
-                        pageNames.length === 1 ? 'page' : 'pages'
-                      }`
-                    : 'Required'}
-                </span>
-              </div>
-
-              <textarea
-                id="page-list"
-                value={pageListText}
-                onChange={(event) => {
-                  setPageListText(event.target.value);
-                  if (error) setError('');
-                }}
-                placeholder={PAGE_LIST_PLACEHOLDER}
-                spellCheck={false}
-                className="field min-h-[380px] p-4 font-mono text-[13px] leading-6"
-              />
-
-              <p className="mt-2 text-xs leading-5 text-faint">
-                Required. Enter the page names you want to generate. You can
-                use “&gt;” or paste plain lines. The order you enter is the
-                order used for the generated pages.
-              </p>
-            </div>
+            <textarea
+              id="service-content"
+              value={contentText}
+              onChange={(event) => {
+                setContentText(event.target.value);
+                if (error) setError('');
+              }}
+              placeholder={CONTENT_PLACEHOLDER}
+              spellCheck={false}
+              className="field min-h-[380px] p-4 text-[15px] leading-7"
+            />
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
@@ -501,12 +431,11 @@ export function ServiceContentParser() {
               Generate pages
             </button>
 
-            {(contentText || pageListText) && (
+            {contentText && (
               <button
                 type="button"
                 onClick={() => {
                   setContentText('');
-                  setPageListText('');
                   setError('');
                 }}
                 className="btn-quiet"
@@ -573,15 +502,6 @@ export function ServiceContentParser() {
               </button>
             </div>
           </div>
-
-          {countMismatch && (
-            <p className="rounded-lg border border-line bg-wash px-4 py-3 text-sm leading-6 text-ink-soft">
-              Your page list has {pageNames.length}{' '}
-              {pageNames.length === 1 ? 'entry' : 'entries'} but the content
-              produced {result.pages.length}. Names are applied in order, so
-              any extra pages keep their own heading as the name.
-            </p>
-          )}
 
           <div className="space-y-3">
             {result.pages.map((page) => (
