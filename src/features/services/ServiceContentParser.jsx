@@ -42,20 +42,23 @@ function CopyBlock({ id, text, className = '', copiedId, copiedIds, onCopy, as: 
       }}
       title="Click to copy"
       className={[
-        'group relative cursor-pointer rounded-md px-3 py-2 pr-16 transition-colors',
-        'hover:bg-wash',
-        justCopied ? 'bg-wash ring-1 ring-ink' : '',
-        wasCopied && !justCopied ? 'opacity-55' : '',
+        'group relative cursor-pointer rounded-md border px-3 py-2 pr-24 transition-all duration-200',
+        wasCopied
+          ? 'border-emerald-500/70 bg-emerald-500/10 shadow-[inset_3px_0_0_0_rgb(16_185_129)] hover:bg-emerald-500/15'
+          : 'border-transparent hover:border-line hover:bg-wash',
+        justCopied ? 'ring-2 ring-emerald-400/60' : '',
       ].join(' ')}
     >
       <Tag className={className}>{value}</Tag>
       <span
         className={[
-          'pointer-events-none absolute right-2 top-2 text-xs transition-opacity',
-          justCopied ? 'text-ink opacity-100' : 'text-faint opacity-0 group-hover:opacity-100',
+          'pointer-events-none absolute right-2 top-2 inline-flex items-center gap-1 rounded-full px-2 py-1 text-[10px] font-bold uppercase tracking-wide transition-all',
+          wasCopied
+            ? 'bg-emerald-400/15 text-emerald-300 opacity-100'
+            : 'bg-wash text-faint opacity-0 group-hover:opacity-100',
         ].join(' ')}
       >
-        {justCopied ? 'Copied' : 'Copy'}
+        {wasCopied ? <><Check className="h-3 w-3" /> Copied</> : 'Copy'}
       </span>
     </div>
   );
